@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div class="board" id="board"></div>
+    <h2 id="status">Player X's turn</h2>
+    <button onclick="resetGame()">Reset Game</button>
+    
+    <script>
+        const board = document.getElementById("board");
+        const status = document.getElementById("status");
+        let currentPlayer = "X";
+        let gameBoard = Array(9).fill(null);
+        let gameActive = true;
+
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    gameActive = false;
+                    status.innerText = `Player ${gameBoard[a]} wins!`;
+                    return;
+                }
+            }
+            if (!gameBoard.includes(null)) {
+                gameActive = false;
+                status.innerText = "It's a tie!";
+            }
+        }
+
+        function handleClick(index) {
+            if (!gameActive || gameBoard[index]) return;
+            gameBoard[index] = currentPlayer;
+            renderBoard();
+            checkWinner();
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            if (gameActive) status.innerText = `Player ${currentPlayer}'s turn`;
+        }
+
+        function renderBoard() {
+            board.innerHTML = "";
+            gameBoard.forEach((mark, index) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                if (mark) cell.classList.add("taken");
+                cell.innerText = mark || "";
+                cell.addEventListener("click", () => handleClick(index));
+                board.appendChild(cell);
+            });
+        }
+
+        function resetGame() {
+            gameBoard.fill(null);
+            gameActive = true;
+            currentPlayer = "X";
+            status.innerText = "Player X's turn";
+            renderBoard();
+        }
+
+        renderBoard();
+    </script>
+</body>
+</html>
